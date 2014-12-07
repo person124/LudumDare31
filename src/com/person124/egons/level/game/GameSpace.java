@@ -1,7 +1,5 @@
 package com.person124.egons.level.game;
 
-import java.util.Random;
-
 import com.person124.egons.EGONS;
 import com.person124.egons.graphics.Sprites;
 import com.person124.egons.level.Game;
@@ -10,7 +8,6 @@ import com.person124.egons.level.entity.EntitySpaceShip;
 
 public class GameSpace extends Game {
 	
-	private Random rand = new Random();
 	private int time, maxTime;
 
 	public GameSpace() {
@@ -18,12 +15,16 @@ public class GameSpace extends Game {
 		setPlayer(new EntitySpaceShip(100 - 8, 150 - 32));
 		setTime();
 		spawnEnemy();
+		spawnEnemy();
+		maxTick = 60 * 15 / EGONS.speed;
 	}
 	
 	public void update() {
 		super.update();
+		tickForTime();
 		time++;
 		if (time >= maxTime) {
+			spawnEnemy();
 			spawnEnemy();
 			setTime();
 		}

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.person124.egons.EGONS;
 import com.person124.egons.IDK;
+import com.person124.egons.audio.AudioFiles;
 import com.person124.egons.graphics.Sprites;
 import com.person124.egons.level.Entity;
 
@@ -35,6 +36,7 @@ public class EntityEvilSpaceShip extends Entity {
 
 		if (IDK.getDistance(EGONS.getGame().getPlayer().x, EGONS.getGame().getPlayer().y, x, y) <= 8) {
 			remove();
+			AudioFiles.pExplode.play();
 			EGONS.lose();
 		}
 	}

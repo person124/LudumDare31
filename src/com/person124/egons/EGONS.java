@@ -10,11 +10,15 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import com.person124.egons.audio.AudioFiles;
 import com.person124.egons.graphics.Render;
+import com.person124.egons.graphics.Sprites;
 import com.person124.egons.input.Keyboard;
 import com.person124.egons.level.Game;
+import com.person124.egons.level.game.GameFrog;
 import com.person124.egons.level.game.GamePong;
 import com.person124.egons.level.game.GameSpace;
+import com.person124.egons.level.game.GameStatic;
 
 public class EGONS extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +39,9 @@ public class EGONS extends Canvas implements Runnable {
 	private static Game[] list;
 	private static Game game;
 	private Keyboard key;
-	public static int speed = 2;
+	public static int speed = 1;
+	private static int lives = 3;
+	private static boolean hasLost = false;
 
 	public EGONS(int s) {
 		scale = s;
@@ -46,7 +52,7 @@ public class EGONS extends Canvas implements Runnable {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(this);
 		frame.pack();
-		frame.setResizable(true);
+		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
@@ -59,13 +65,15 @@ public class EGONS extends Canvas implements Runnable {
 		addKeyListener(key);
 		addFocusListener(key);
 
-		game = new GamePong();
+		game = new GameStatic();
+		makeSet();
+		AudioFiles.loadAudio();
 
 		start();
 	}
 
 	public void update() {
-		game.update();
+		if (!hasLost) game.update();
 	}
 
 	public void render() {
@@ -73,6 +81,9 @@ public class EGONS extends Canvas implements Runnable {
 		Graphics g = bs.getDrawGraphics();
 
 		game.render();
+		Render.renderSprite(lives > 0 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 0, 0);
+		Render.renderSprite(lives > 1 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 16, 0);
+		Render.renderSprite(lives > 2 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 32, 0);
 
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.dispose();
@@ -80,18 +91,33 @@ public class EGONS extends Canvas implements Runnable {
 	}
 
 	public static void makeSet() {
-		Game[] games = new Game[] { new GameSpace() };
+		Game[] games = new Game[] { new GameSpace(), new GamePong(), new GameFrog() };
 		list = new Game[games.length];
-		while (true) {
-			
-		}
+		int i = rand.nextInt(games.length);
+		list[0] = games[i];
+		list[1] = i + 1 >= games.length ? games[0] : games[i + 1];
+		list[2] = games[games.length - 1 - i];
 	}
 
 	public static void nextLevel() {
-
+		System.out.println(current);
+		if (current == -1) {
+			current = 0;
+			speed++;
+			makeSet();
+		}
+		
+		if (current % 2 == 1) game = new GameStatic();
+		else {
+			game = list[current / 2];
+		}
+		current++;
 	}
 
 	public static void lose() {
+		lives--;
+		if (lives == -1) hasLost = true;
+		//Check to see if lives == -1
 		System.out.println("LOST!");
 	}
 
@@ -129,7 +155,7 @@ public class EGONS extends Canvas implements Runnable {
 
 	public synchronized void start() {
 		running = true;
-		thread = new Thread(this);
+		thread = new Thread(this, "egons_main_thread");
 		thread.start();
 	}
 

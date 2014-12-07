@@ -1,6 +1,7 @@
 package com.person124.egons.level.entity;
 
 import com.person124.egons.EGONS;
+import com.person124.egons.audio.AudioFiles;
 import com.person124.egons.graphics.Sprites;
 import com.person124.egons.input.Keyboard;
 import com.person124.egons.level.Entity;
@@ -29,6 +30,7 @@ public class EntitySpaceShip extends Entity {
 
 		if (Keyboard.up && canShoot) {
 			canShoot = false;
+			AudioFiles.shoot.play();
 			EGONS.getGame().addEntity(new EntitySpaceShot(x + 6, y));
 		}
 	}

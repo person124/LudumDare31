@@ -18,7 +18,7 @@ public class EntityPongPlayerPaddle extends Entity {
 		int xp = EGONS.getGame().getPlayer().x;
 		int yp = EGONS.getGame().getPlayer().y;
 		if (xp <= 24 && xp >= 16) {
-			if (yp >= y && yp <= y + 32) ((EntityPongBall) EGONS.getGame().getPlayer()).flip();
+			if (yp >= y && yp <= y + 32) ((EntityPongBall) EGONS.getGame().getPlayer()).flip(25);
 		}
 	}
 
