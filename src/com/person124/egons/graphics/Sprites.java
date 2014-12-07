@@ -7,6 +7,7 @@ public class Sprites {
 	public static final Sprite LIFE_EMPTY = new Sprite("/textures/lifeempty.png");
 
 	//Backgrounds
+	public static final Sprite BG_TITLE = new Sprite("/textures/bg_title.png");
 	public static final Sprite BG_SPACE = new Sprite("/textures/bg_space.png");
 	public static final Sprite BG_BLACK = new Sprite(200, 150, 0);
 	public static final Sprite BG_ROAD = new Sprite("/textures/bg_road.png");

@@ -5,16 +5,10 @@ import java.applet.AudioClip;
 
 public class Audio {
 
-	private String path;
 	private AudioClip clip;
 
 	public Audio(String path) {
-		this.path = path;
-		try {
-			clip = Applet.newAudioClip(Audio.class.getResource(path));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		clip = Applet.newAudioClip(Audio.class.getResource(path));
 	}
 
 	public void play() {
@@ -22,15 +16,7 @@ public class Audio {
 			public void run() {
 				clip.play();
 			}
-		});
-	}
-
-	public void loop() {
-		clip.loop();
-	}
-
-	public void stop() {
-		clip.stop();
+		}).start();
 	}
 
 }

@@ -9,6 +9,7 @@ import java.awt.image.DataBufferInt;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.person124.egons.audio.AudioFiles;
 import com.person124.egons.graphics.Render;
@@ -19,10 +20,12 @@ import com.person124.egons.level.game.GameFrog;
 import com.person124.egons.level.game.GamePong;
 import com.person124.egons.level.game.GameSpace;
 import com.person124.egons.level.game.GameStatic;
+import com.person124.egons.level.game.GameTitle;
 
 public class EGONS extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
+	private static EGONS instance;
 	private static Random rand = new Random();
 
 	public static final String TITLE = "Entire Game on One Screen";
@@ -44,6 +47,7 @@ public class EGONS extends Canvas implements Runnable {
 	private static boolean hasLost = false;
 
 	public EGONS(int s) {
+		instance = this;
 		scale = s;
 
 		frame = new JFrame();
@@ -65,7 +69,7 @@ public class EGONS extends Canvas implements Runnable {
 		addKeyListener(key);
 		addFocusListener(key);
 
-		game = new GameStatic();
+		game = new GameTitle();
 		makeSet();
 		AudioFiles.loadAudio();
 
@@ -81,9 +85,11 @@ public class EGONS extends Canvas implements Runnable {
 		Graphics g = bs.getDrawGraphics();
 
 		game.render();
-		Render.renderSprite(lives > 0 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 0, 0);
-		Render.renderSprite(lives > 1 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 16, 0);
-		Render.renderSprite(lives > 2 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 32, 0);
+		if (!(game instanceof GameTitle)) {
+			Render.renderSprite(lives > 0 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 0, 0);
+			Render.renderSprite(lives > 1 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 16, 0);
+			Render.renderSprite(lives > 2 ? Sprites.LIFE_FULL : Sprites.LIFE_EMPTY, 32, 0);
+		}
 
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.dispose();
@@ -100,13 +106,15 @@ public class EGONS extends Canvas implements Runnable {
 	}
 
 	public static void nextLevel() {
-		System.out.println(current);
-		if (current == -1) {
-			current = 0;
+		if (current == 5) {
+			current = -1;
 			speed++;
+			game = new GameStatic();
+			lives = lives + 1 <= 3 ? lives + 1 : 3;
+			AudioFiles.gainLife.play();
 			makeSet();
 		}
-		
+
 		if (current % 2 == 1) game = new GameStatic();
 		else {
 			game = list[current / 2];
@@ -116,9 +124,11 @@ public class EGONS extends Canvas implements Runnable {
 
 	public static void lose() {
 		lives--;
-		if (lives == -1) hasLost = true;
-		//Check to see if lives == -1
-		System.out.println("LOST!");
+		if (lives == -1) {
+			hasLost = true;
+			JOptionPane.showMessageDialog(instance, "Your score was: " + speed + ".", "Score", JOptionPane.INFORMATION_MESSAGE);
+			System.exit(0);
+		}
 	}
 
 	public void run() {
@@ -142,11 +152,15 @@ public class EGONS extends Canvas implements Runnable {
 
 			if (System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
-				frame.setTitle(TITLE + " | fps: " + fps + ", ups: " + ups);
+				frame.setTitle(TITLE + " | fps: " + fps + ", ups: " + ups + " | Speed: " + speed);
 				ups = 0;
 				fps = 0;
 			}
 		}
+	}
+	
+	public static void setGame(Game g) {
+		game = g;
 	}
 
 	public static Game getGame() {
@@ -166,6 +180,7 @@ public class EGONS extends Canvas implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
 
 	public static void main(String[] args) {

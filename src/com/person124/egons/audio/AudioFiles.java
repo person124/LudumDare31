@@ -4,6 +4,7 @@ public class AudioFiles {
 	
 	//Misc
 	public static Audio noise;
+	public static Audio gainLife;
 	
 	//Space
 	public static Audio shoot;
@@ -19,6 +20,7 @@ public class AudioFiles {
 	
 	public static void loadAudio() {
 		noise = new Audio("/sounds/static.wav");
+		gainLife = new Audio("/sounds/gainhealth.wav");
 		
 		shoot = new Audio("/sounds/shoot.wav");
 		pExplode = new Audio("/sounds/pexplode.wav");
